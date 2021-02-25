@@ -98,23 +98,58 @@ namespace GoogleHashCode2021
             Console.WriteLine("-----------------------");
         }
 
+        class IntersectionSchedule 
+        {
+            public int Intersection { get; set; }
+
+            public List<Street> Schedule { get; set; } = new List<Street>();
+        }
+
         private static void SolutionOne(List<Street> streets, List<Car> cars, StringBuilder outputBuilder)
         {
-            var intersectionsStreet = streets
+            var trafficLights = streets
                    .GroupBy(x => x.End)
-                   .ToDictionary(x=>x.Key, x=>x.ToList());
+                   .ToDictionary(x => x.Key, x => x.ToList());
 
-            outputBuilder.Append($"{intersectionsStreet.Count}\n");
-            foreach (var item in intersectionsStreet)
+            var streetUsage = cars
+                .SelectMany(c => c.Streets)
+                .GroupBy(x => x)
+                .ToDictionary(x => x.Key, x => x.ToList().Count);
+
+            var schedules = new List<IntersectionSchedule>();
+            foreach (var trafficLight in trafficLights)
             {
-                outputBuilder.Append($"{item.Key}\n");
-                outputBuilder.Append($"{item.Value.Count}\n");
-                foreach(var street in item.Value)
+                if (trafficLight.Value.Where(x => streetUsage.ContainsKey(x.Name)).Any())
                 {
-                    outputBuilder.Append($"{street.Name} 1\n");
-                }
+                    var schedule = new IntersectionSchedule();
+                    schedule.Intersection = trafficLight.Key;
 
-                //outputBuilder.Append($"{street.Name}\n");
+                    foreach (var street in trafficLight.Value)
+                    {
+                        if (streetUsage.ContainsKey(street.Name))
+                        {
+                            schedule.Schedule.Add(new Street { Name = street.Name, Seconds = streetUsage[street.Name] });
+                        }
+                    }
+
+                    schedules.Add(schedule);
+                }
+            }
+
+            WriteOutput(outputBuilder, schedules);
+        }
+
+        private static void WriteOutput(StringBuilder outputBuilder, List<IntersectionSchedule> schedules)
+        {
+            outputBuilder.Append($"{schedules.Count}\n");
+            foreach (var schedule in schedules)
+            {
+                outputBuilder.Append($"{schedule.Intersection}\n");
+                outputBuilder.Append($"{schedule.Schedule.Count}\n");
+                foreach (var sch in schedule.Schedule)
+                {
+                    outputBuilder.Append($"{sch.Name} {sch.Seconds}\n");
+                }
             }
         }
 
