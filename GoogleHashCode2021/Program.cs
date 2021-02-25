@@ -150,7 +150,7 @@ namespace GoogleHashCode2021
                     {
                         Name = x.Name,
                         count = countFirstStreets.ContainsKey(x.Name) ? countFirstStreets[x.Name] : 0
-                    }).OrderBy(x=>x.count);
+                    }).OrderByDescending(x=>x.count);
 
                     foreach (var street in prioStreets)
                     {
