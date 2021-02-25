@@ -16,7 +16,6 @@ namespace GoogleHashCode2021
 
         public string Name { get; set; }
         public int CarStarting { get; set; }
-
     }
 
     public class Car
@@ -123,7 +122,6 @@ namespace GoogleHashCode2021
 
         private static void SolutionOne(int simulationTime, List<Street> streets, List<Car> cars, StringBuilder outputBuilder)
         {
-
             cars = cars.Where(x => x.MinimumTravelTime() < simulationTime).ToList();
 
             var trafficLights = streets
@@ -139,7 +137,6 @@ namespace GoogleHashCode2021
 
             var countFirstStreets = firstStreets.GroupBy(c=>c)
                       .ToDictionary(x => x.Key, x => x.ToList().Count);
-
 
             var schedules = new List<IntersectionSchedule>();
             foreach (var trafficLight in trafficLights)
@@ -162,16 +159,12 @@ namespace GoogleHashCode2021
                             schedule.Schedule.Add(new Street 
                             {   Name = street.Street.Name,
                                 Seconds = Math.Min(streetUsage[street.Street], street.Street.Seconds)
-                            });
-                            
-                        }
-                        
+                            });                           
+                        } 
                     }
                     schedules.Add(schedule);
                 }
             }
-
-
 
             WriteOutput(outputBuilder, schedules);
         }
