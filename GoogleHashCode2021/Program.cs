@@ -27,8 +27,7 @@ namespace GoogleHashCode2021
             }
         }
 
-
-//hello world
+        //hello world
         private static void HandleInput(string input)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
@@ -39,6 +38,8 @@ namespace GoogleHashCode2021
             var allLines = File.ReadAllLines(input);
 
             var firstLineSplit = allLines.First().Split(' ');
+
+
             var amountOfPizzas = int.Parse(firstLineSplit[0]);
             var amountOf2PeopleTeams = int.Parse(firstLineSplit[1]);
             var amountOf3PeopleTeams = int.Parse(firstLineSplit[2]);
