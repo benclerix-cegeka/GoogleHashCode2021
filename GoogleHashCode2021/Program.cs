@@ -22,6 +22,8 @@ namespace GoogleHashCode2021
         public int NumberOfStreets { get; set; }
 
         public string[] Streets { get; set; }
+
+        public int MinimumTravelTime { get; set; }
     }
 
     class Program
@@ -87,7 +89,7 @@ namespace GoogleHashCode2021
                 cars.Add(car);
             }
 
-            SolutionOne(streets, cars, outputBuilder);
+            SolutionOne(simulationTIme, streets, cars, outputBuilder);
 
 
             WriteResult(outputBuilder.ToString(), Path.GetFileName(fileName));
@@ -105,8 +107,15 @@ namespace GoogleHashCode2021
             public List<Street> Schedule { get; set; } = new List<Street>();
         }
 
-        private static void SolutionOne(List<Street> streets, List<Car> cars, StringBuilder outputBuilder)
+        private static void SolutionOne(int simulationTime, List<Street> streets, List<Car> cars, StringBuilder outputBuilder)
         {
+            foreach (var car in cars)
+            {
+                car.MinimumTravelTime = streets.Where(x => car.Streets.Contains(x.Name)).Select(x => x.Seconds).Sum();
+            }
+
+            cars = cars.Where(x => x.MinimumTravelTime < simulationTime).ToList();
+
             var trafficLights = streets
                    .GroupBy(x => x.End)
                    .ToDictionary(x => x.Key, x => x.ToList());
