@@ -158,7 +158,7 @@ namespace GoogleHashCode2021
                         {
                             schedule.Schedule.Add(new Street 
                             {   Name = street.Street.Name,
-                                Seconds = Math.Min(streetUsage[street.Street], street.Street.Seconds)
+                                Seconds = Math.Max(Math.Min(streetUsage[street.Street], street.Street.Seconds),1)
                             });                           
                         } 
                     }
