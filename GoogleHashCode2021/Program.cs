@@ -161,7 +161,7 @@ namespace GoogleHashCode2021
                         {
                             schedule.Schedule.Add(new Street 
                             {   Name = street.Street.Name,
-                                Seconds = streetUsage[street.Street] 
+                                Seconds = Math.Min(streetUsage[street.Street], street.Street.Seconds)
                             });
                             
                         }
@@ -170,6 +170,8 @@ namespace GoogleHashCode2021
                     schedules.Add(schedule);
                 }
             }
+
+
 
             WriteOutput(outputBuilder, schedules);
         }
