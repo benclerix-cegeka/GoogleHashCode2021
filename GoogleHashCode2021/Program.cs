@@ -6,13 +6,22 @@ using System.Text;
 
 namespace GoogleHashCode2021
 {
-    public class Pizza
+    public class Street
     {
-        public int Id { get; set; }
+        public int Seconds { get; set; }
 
-        public int IngredientCount { get; set; }
+        public int Start { get; set; }
 
-        public List<string> Ingredients { get; set; }
+        public int End { get; set; }
+
+        public string Name { get; set; }
+    }
+
+    public class Car
+    {
+        public int NumberOfStreets { get; set; }
+
+        public string[] Streets { get; set; }
     }
 
     class Program
@@ -39,32 +48,47 @@ namespace GoogleHashCode2021
             var allLines = File.ReadAllLines(input);
 
             var firstLineSplit = allLines.First().Split(' ');
-            var amountOfPizzas = int.Parse(firstLineSplit[0]);
-            var amountOf2PeopleTeams = int.Parse(firstLineSplit[1]);
-            var amountOf3PeopleTeams = int.Parse(firstLineSplit[2]);
-            var amountOf4PeopleTeams = int.Parse(firstLineSplit[3]);
+            var simulationTIme = int.Parse(firstLineSplit[0]);
+            var numberOfIntersections = int.Parse(firstLineSplit[1]);
+            var numberOfStreets = int.Parse(firstLineSplit[2]);
+            var numberOfCars = int.Parse(firstLineSplit[3]);
 
             var outputBuilder = new StringBuilder();
 
-            allLines = allLines.Skip(1).ToArray();
-            List<Pizza> pizzas = new List<Pizza>();
-            var count = 0;
-            foreach (var inputLine in allLines)
+            string[] linesStreets = allLines.Skip(1).Take(numberOfStreets).ToArray();
+            string[] linesCars = allLines.Skip(1+numberOfStreets).Take(numberOfCars).ToArray();
+
+            List<Street> streets = new List<Street>();
+            foreach (var inputLine in linesStreets)
             {
                 var argumentsInLine = inputLine.Split(' ');
 
-                var line = new Pizza
+                var street = new Street
                 {
-                    Id = count,
-                    IngredientCount = int.Parse(argumentsInLine[0]),
-                    Ingredients = argumentsInLine.Skip(1).ToList()
+                    Start = int.Parse(argumentsInLine[0]),
+                    End = int.Parse(argumentsInLine[1]),
+                    Name = argumentsInLine[2],
+                    Seconds = int.Parse(argumentsInLine[3])
                 };
-                
-                pizzas.Add(line);
-                count++;
+
+                streets.Add(street);
             }
 
-            SolutionOne(pizzas, outputBuilder);
+            List<Car> cars = new List<Car>();
+            foreach (var inputLine in linesCars)
+            {
+                var argumentsInLine = inputLine.Split(' ');
+
+                var car = new Car
+                {
+                    NumberOfStreets = int.Parse(argumentsInLine[0]),
+                    Streets = argumentsInLine.Skip(1).ToArray()
+                };
+
+                cars.Add(car);
+            }
+
+            SolutionOne(streets, outputBuilder);
 
 
             WriteResult(outputBuilder.ToString(), Path.GetFileName(fileName));
@@ -75,11 +99,11 @@ namespace GoogleHashCode2021
             Console.WriteLine("-----------------------");
         }
 
-        private static void SolutionOne(List<Pizza> pizzas, StringBuilder outputBuilder)
+        private static void SolutionOne(List<Street> streets, StringBuilder outputBuilder)
         {
-            foreach (var pizza in pizzas)
+            foreach (var street in streets)
             {
-                outputBuilder.Append($"{pizza.Id}\n");
+                outputBuilder.Append($"{street.Name}\n");
             }
         }
 
