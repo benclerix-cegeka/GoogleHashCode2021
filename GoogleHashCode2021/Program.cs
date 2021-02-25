@@ -23,13 +23,16 @@ namespace GoogleHashCode2021
     {
         public int NumberOfStreets { get; set; }
 
-        public string[] Streets { get; set; }
-        public string FirstStreet()
+        public List<Street> Streets { get; set; }
+        public Street FirstStreet()
         {
            return Streets.First();
         }
 
-        public int MinimumTravelTime { get; set; }
+        public int MinimumTravelTime()
+        {
+            return Streets.Skip(1).Sum(x => x.Seconds +1);
+        }
     }
 
     class Program
@@ -85,11 +88,16 @@ namespace GoogleHashCode2021
             foreach (var inputLine in linesCars)
             {
                 var argumentsInLine = inputLine.Split(' ');
+                var carStreets = new List<Street>();
+                foreach (var street in argumentsInLine.Skip(1))
+                {
+                    carStreets.Add(streets.Single(x => x.Name == street));
+                }
 
                 var car = new Car
                 {
                     NumberOfStreets = int.Parse(argumentsInLine[0]),
-                    Streets = argumentsInLine.Skip(1).ToArray()
+                    Streets = carStreets
                 };
 
                 cars.Add(car);
@@ -115,20 +123,15 @@ namespace GoogleHashCode2021
 
         private static void SolutionOne(int simulationTime, List<Street> streets, List<Car> cars, StringBuilder outputBuilder)
         {
-            //is dit wel ok? 
-            foreach (var car in cars)
-            {
-                car.MinimumTravelTime = streets.Where(x => car.Streets.Contains(x.Name)).Select(x => x.Seconds).Sum();
-            }
 
-            cars = cars.Where(x => x.MinimumTravelTime < simulationTime).ToList();
+            cars = cars.Where(x => x.MinimumTravelTime() < simulationTime).ToList();
 
             var trafficLights = streets
                    .GroupBy(x => x.End)
                    .ToDictionary(x => x.Key, x => x.ToList());
 
             var streetUsage = cars
-                .SelectMany(c => c.Streets)
+                .SelectMany(c => c.Streets.SkipLast(1))
                 .GroupBy(x => x)
                 .ToDictionary(x => x.Key, x => x.ToList().Count);
 
@@ -141,22 +144,25 @@ namespace GoogleHashCode2021
             var schedules = new List<IntersectionSchedule>();
             foreach (var trafficLight in trafficLights)
             {
-                if (trafficLight.Value.Where(x => streetUsage.ContainsKey(x.Name)).Any())
+                if (trafficLight.Value.Where(x => streetUsage.ContainsKey(x)).Any())
                 {
                     var schedule = new IntersectionSchedule();
                     schedule.Intersection = trafficLight.Key;
 
                     var prioStreets = trafficLight.Value.Select(x => new
                     {
-                        Name = x.Name,
-                        count = countFirstStreets.ContainsKey(x.Name) ? countFirstStreets[x.Name] : 0
+                        Street = x,
+                        count = countFirstStreets.ContainsKey(x) ? countFirstStreets[x] : 0
                     }).OrderByDescending(x=>x.count);
 
                     foreach (var street in prioStreets)
                     {
-                        if (streetUsage.ContainsKey(street.Name))
+                        if (streetUsage.ContainsKey(street.Street))
                         {
-                            schedule.Schedule.Add(new Street { Name = street.Name, Seconds = streetUsage[street.Name] });
+                            schedule.Schedule.Add(new Street 
+                            {   Name = street.Street.Name,
+                                Seconds = streetUsage[street.Street] 
+                            });
                             
                         }
                         
@@ -165,7 +171,6 @@ namespace GoogleHashCode2021
                 }
             }
 
-           
             WriteOutput(outputBuilder, schedules);
         }
 
