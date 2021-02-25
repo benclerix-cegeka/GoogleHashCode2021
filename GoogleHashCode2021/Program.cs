@@ -15,6 +15,8 @@ namespace GoogleHashCode2021
         public int End { get; set; }
 
         public string Name { get; set; }
+        public int CarStarting { get; set; }
+
     }
 
     public class Car
@@ -22,6 +24,10 @@ namespace GoogleHashCode2021
         public int NumberOfStreets { get; set; }
 
         public string[] Streets { get; set; }
+        public string FirstStreet()
+        {
+           return Streets.First();
+        }
 
         public int MinimumTravelTime { get; set; }
     }
@@ -109,6 +115,7 @@ namespace GoogleHashCode2021
 
         private static void SolutionOne(int simulationTime, List<Street> streets, List<Car> cars, StringBuilder outputBuilder)
         {
+            //is dit wel ok? 
             foreach (var car in cars)
             {
                 car.MinimumTravelTime = streets.Where(x => car.Streets.Contains(x.Name)).Select(x => x.Seconds).Sum();
@@ -125,6 +132,12 @@ namespace GoogleHashCode2021
                 .GroupBy(x => x)
                 .ToDictionary(x => x.Key, x => x.ToList().Count);
 
+            var firstStreets = cars.Select(x => x.FirstStreet());
+
+            var countFirstStreets = firstStreets.GroupBy(c=>c)
+                      .ToDictionary(x => x.Key, x => x.ToList().Count);
+
+
             var schedules = new List<IntersectionSchedule>();
             foreach (var trafficLight in trafficLights)
             {
@@ -133,18 +146,26 @@ namespace GoogleHashCode2021
                     var schedule = new IntersectionSchedule();
                     schedule.Intersection = trafficLight.Key;
 
-                    foreach (var street in trafficLight.Value)
+                    var prioStreets = trafficLight.Value.Select(x => new
+                    {
+                        Name = x.Name,
+                        count = countFirstStreets.ContainsKey(x.Name) ? countFirstStreets[x.Name] : 0
+                    }).OrderBy(x=>x.count);
+
+                    foreach (var street in prioStreets)
                     {
                         if (streetUsage.ContainsKey(street.Name))
                         {
                             schedule.Schedule.Add(new Street { Name = street.Name, Seconds = streetUsage[street.Name] });
+                            
                         }
+                        
                     }
-
                     schedules.Add(schedule);
                 }
             }
 
+           
             WriteOutput(outputBuilder, schedules);
         }
 
