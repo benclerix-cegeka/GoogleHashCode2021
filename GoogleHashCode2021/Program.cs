@@ -87,7 +87,7 @@ namespace GoogleHashCode2021
                 cars.Add(car);
             }
 
-            SolutionOne(streets, outputBuilder);
+            SolutionOne(streets, cars, outputBuilder);
 
 
             WriteResult(outputBuilder.ToString(), Path.GetFileName(fileName));
@@ -98,11 +98,23 @@ namespace GoogleHashCode2021
             Console.WriteLine("-----------------------");
         }
 
-        private static void SolutionOne(List<Street> streets, StringBuilder outputBuilder)
+        private static void SolutionOne(List<Street> streets, List<Car> cars, StringBuilder outputBuilder)
         {
-            foreach (var street in streets)
+            var intersectionsStreet = streets
+                   .GroupBy(x => x.End)
+                   .ToDictionary(x=>x.Key, x=>x.ToList());
+
+            outputBuilder.Append($"{intersectionsStreet.Count}\n");
+            foreach (var item in intersectionsStreet)
             {
-                outputBuilder.Append($"{street.Name}\n");
+                outputBuilder.Append($"{item.Key}\n");
+                outputBuilder.Append($"{item.Value.Count}\n");
+                foreach(var street in item.Value)
+                {
+                    outputBuilder.Append($"{street.Name} 1\n");
+                }
+
+                //outputBuilder.Append($"{street.Name}\n");
             }
         }
 
