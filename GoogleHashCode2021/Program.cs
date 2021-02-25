@@ -36,8 +36,7 @@ namespace GoogleHashCode2021
             }
         }
 
-
-
+        //hello world
         private static void HandleInput(string input)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
